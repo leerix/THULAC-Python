@@ -5,7 +5,6 @@ from ..base.Node import Node
 from ..base.Dat import Dat
 from ..base.WordWithTag import WordWithTag
 from ..base.AlphaBeta import AlphaBeta
-import time
 import array
 
 class CBTaggingDecoder:
@@ -42,10 +41,10 @@ class CBTaggingDecoder:
 
             pre = (i + 1)
             self.nodes[i].successors = pre
-        
+
         self.dat = Dat(datFile)
         self.nGramFeature = CBNGramFeature(self.dat, self.model)
-        
+
         self.labelInfo = ["" for i in range(10000)]
         self.pocTags = []
         for i in range(16):
@@ -167,7 +166,6 @@ class CBTaggingDecoder:
                 self.allowedLabelLists[i] = self.pocsToTags[15]
         self.sequence = raw
         self.len = len(raw)
-        start = time.clock()
         self.putValues()
         self.dp()
 
