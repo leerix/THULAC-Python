@@ -8,13 +8,8 @@ class Dat:
 
     def __init__(self, filename=None, datSize=None, oldDat=None):
         if(filename):
-            try:
-                inputfile = open(filename, "rb")
-            except:
-                print("open file %s failed" % filename)
-                sys.exit()
+            inputfile = open(filename, "rb")
             self.datSize = int(os.path.getsize(filename) / 8)
-            
             s = inputfile.read(8 * self.datSize)
             tmp = "<"+str(self.datSize*2)+"i"
             self.dat = struct.unpack(tmp, s)

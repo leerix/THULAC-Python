@@ -6,65 +6,59 @@ from ..base.compatibility import chrGenerator
 chr = chrGenerator()
 
 class Preprocesser:
-    def __init__(self, rm_space=False):
-        self.otherSet = [65292, 12290, 65311, 65281, 65306, 65307, 8216, \
+    def __init__(self):
+        self.otherSet = []
+        self.singlePunSet = []
+        self.httpSet = []
+        self.t2s = {}
+        self.s2t = {}
+        for i in range(65, 91):
+            self.otherSet.append(i)
+            self.httpSet.append(i)
+        for i in range(97, 123):
+            self.otherSet.append(i)
+            self.httpSet.append(i)
+        for i in range(48, 58):
+            self.otherSet.append(i)
+            self.httpSet.append(i)
+        other = [65292, 12290, 65311, 65281, 65306, 65307, 8216, \
                 8217, 8220, 8221, 12304, 12305, \
                 12289, 12298, 12299, 126, 183, 64, 124, 35, 65509, 37, 8230, 38, 42, 65288, \
                 65289, 8212, 45, 43, 61, 44, 46, 60, 62, 63, 47, 33, 59, 58, 39, 34, 123, 125, \
-                91, 93, 92, 124, 35, 36, 37, 94, 38, 42, 40, 41, 95, 45, 43, 61, 9700, 9734, 9733, 32, 12288, \
-                 21543, 32610, 21591, 21877, 30340, 20215, 23478, 21862, 26469, 21819, \
-                 20102, 22046, 21737, 21671, 21679, 21872, 21949, 21527, 22043, 22172, 20040, \
-                 21738, 21602, 21584, 21542, 21621, 21704, 19981, 20846, 33324, 21017, 36830, \
-                 32599, 32473, 22139, 21705, 38463, 21834, 21571, 27448, 21703, 21568, 20063, \
-                 32822, 21727, 27428, 21589, 22114, 21606, 22050
-                 ]
-        self.singlePunSet = [65292, 12290, 65311, 65281, 65306, 65307, 8216, 8217, 8220, 8221, 1230, 12304, \
+                91, 93, 92, 124, 35, 36, 37, 94, 38, 42, 40, 41, 95, 45, 43, 61, 9700, 9734, 9733]
+        templen = 63
+        for i in range(templen):
+            self.otherSet.append(other[i])
+
+        singlePun = [65292, 12290, 65311, 65281, 65306, 65307, 8216, 8217, 8220, 8221, 1230, 12304, \
                     12305, 12289, 12298, 12299, 64,35, 65288, 65289, 34, 91, 93, 126, 47, 44, 58, \
-                    63, 9700, 9734, 9733, 8230, 39, 33, 42, 43, 62, 40, 41, 59, 61, 32, 12288]
-        self.httpSet = [47, 46, 58, 35, 34, 95, 45, 61, 43, 38, 36, 59]
-        self.modalParticleSet = [20040, 21602, 21543, 21834, 21602, 21734]
-        self.t2s = {}
-        self.s2t = {}
-        self.rmSpace = rm_space
-        self.isOther = self.is_X(self.otherSet)
-        self.isSinglePun = self.is_X(self.singlePunSet)
-        self.isHttp = self.is_X(self.httpSet)
-        self.isModalParticleSet = self.is_X(self.modalParticleSet)
+                    63, 9700, 9734, 9733, 8230, 39, 33, 42, 43, 62, 40, 41, 59, 61]
+        templen = 41
+        for i in range(templen):
+            self.singlePunSet.append(singlePun[i])
 
+        httpChar = ['/', '.', ':', '#', '"', '_', '-', '=', '+', '&', '$', ';']
+        templen = 12
+        for i in range(templen):
+            self.httpSet.append(ord(httpChar[i]))
 
-    def is_X(self, charType):
-        def func(c):
-            if(c in charType):
-                return True
-            else:
-                return False
-        return func
-
-
-
-    # def isOther(self, c):
-    #     if(c in self.otherSet):
-    #         return True
-    #     else:
-    #         return False
+    def isOther(self, c):
+        if(c in self.otherSet):
+            return True
+        else:
+            return False
     
-    # def isSinglePun(self, c):
-    #     if(c in self.singlePunSet):
-    #         return True
-    #     else:
-    #         return False
+    def isSinglePun(self, c):
+        if(c in self.singlePunSet):
+            return True
+        else:
+            return False
     
-    # def isHttp(self, c):
-    #     if(c in self.httpSet):
-    #         return True
-    #     else:
-    #         return False
-
-    # def isModalParticleSet(self, c):
-    #     if(c in self.modalParticleSet):
-    #         return True
-    #     else:
-    #         return False
+    def isHttp(self, c):
+        if(c in self.httpSet):
+            return True
+        else:
+            return False
 
     def setT2SMap(self, filename):
         file = open(filename, "rb")
@@ -110,31 +104,30 @@ class Preprocesser:
                         o = graph[-1] & 12
                         graph[-1] = o
                     hasSpace = True
-                    if(not self.rmSpace):
-                        senClean += sentence[i]
-                        graph.append(9)
                     continue
 
+                # if(hasAt):
+                #     npVec.append(npRaw)
+                #     npStartVec.append(npStart)
+                #     hasAt = False
             elif(self.isOther(c)):
                 if(hasSpace):
                     senClean += sentence[i]
-                    if(self.isSinglePun(c) or self.isModalParticleSet(c)):
+                    if(self.isSinglePun(c)):
                         graph.append(8)
-                        if(self.isSinglePun(c)):
-                            hasSinglePun = True
+                        hasSinglePun = True
                     else:
                         graph.append(9)
                         hasSinglePun = False
                     hasSpace = False
                 elif(hasOther):
-                    if(self.isSinglePun(c) or self.isModalParticleSet(c)):
+                    if(self.isSinglePun(c)):
                         if(len(graph) > 0):
                             o = graph[-1] & 12
                             graph[-1] = o
                         senClean += sentence[i]
                         graph.append(8)
-                        if(self.isSinglePun(c)):
-                            hasSinglePun = True
+                        hasSinglePun = True
 
                     else:
                         if(hasSinglePun):

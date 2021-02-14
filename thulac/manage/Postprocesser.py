@@ -10,11 +10,7 @@ class Postprocesser():
         self.tag = tag
         if(isTxt):
             lexicon = []
-            f = None
-            try:
-                f = open(filename, "r", encoding="utf-8")
-            except:
-                f = open(filename, "r")
+            f = open(filename, "r")  
             for i, line in enumerate(f):
                 line = line.split()
                 lexicon.append([decode(line[0]), i])
